@@ -7,10 +7,8 @@ import Contact from "./pages/Contact";
 import "./index.css";
 
 function ScrollToTop() {
-  const { pathname, search, hash } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname, search, hash]);
+  const { pathname, search } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname, search]);
   return null;
 }
 
