@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      - run: npm ci || npm i
       - run: npx vite build
       - run: cp dist/index.html dist/404.html
       - run: echo beachbumzmhc.com > dist/CNAME
