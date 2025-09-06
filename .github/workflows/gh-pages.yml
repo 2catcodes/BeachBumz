@@ -1,4 +1,4 @@
-name: Pages smoke
+name: Deploy Vite to Pages
 on:
   push:
     branches: [ main ]
@@ -9,16 +9,26 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "<h1>ok</h1>" > index.html
-      - run: cp index.html 404.html
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci || npm i
+      - run: npx vite build
+      - run: cp dist/index.html dist/404.html
+      - run: echo beachbumzmhc.com > dist/CNAME
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
-
+          path: dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
