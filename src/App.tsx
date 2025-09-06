@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Menu from "./pages/Menu";
+# import Menu from "./pages/Menu";
 import Contact from "./pages/Contact";
 import "./index.css";
 
