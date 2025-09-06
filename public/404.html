@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>404</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (function () {
+        var p = location.pathname + location.search + location.hash;
+        if (location.pathname === "/" && location.search.indexOf("p=") !== -1) return;
+        location.replace("/?p=" + encodeURIComponent(p));
+      })();
+    </script>
+    <noscript>This site requires JavaScript. Go to <a href="/">home</a>.</noscript>
+  </head>
+  <body></body>
+</html>
