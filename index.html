@@ -9,18 +9,15 @@
     <meta name="description" content="Beach Bumz Pub & Pizzeria in Morehead City, NC - serving fresh pizza, subs, wings, pasta and craft drinks. Now with liquor license! Order on DoorDash." />
     <meta name="keywords" content="pizza, pub, Morehead City, NC, restaurant, wings, subs, pasta, seafood, beach dining" />
 
-    <!-- Open Graph -->
     <meta property="og:title" content="Beach Bumz Pub & Pizzeria - Where Comfort Meets the Coast" />
     <meta property="og:description" content="Bold coastal pub serving pizza, subs, wings & more in Morehead City, NC" />
     <meta property="og:type" content="restaurant" />
     <meta property="og:url" content="https://beachbumzpub.com" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -42,7 +39,6 @@
     }
     </script>
 
-    <!-- Optional: SPA param-to-path fix (harmless with 404.html present) -->
     <script>
       (function () {
         try {
@@ -56,36 +52,36 @@
   <body>
     <div id="root"></div>
 
-    <!-- Kill switch: flip public/maintenance.json enabled:true to block app boot -->
     <script>
       (function () {
         try {
           var r = new XMLHttpRequest();
-          r.open('GET', '/maintenance.json?v=' + Date.now(), false); // cache-bust
+          r.open('GET', '/maintenance.json?v=' + Date.now(), false);
           r.send(null);
           if (r.status === 200) {
             var cfg = JSON.parse(r.responseText || '{}');
             if (cfg.enabled) {
               var entry = document.getElementById('app-entry');
-              if (entry) entry.remove(); // prevent app from loading
+              if (entry) entry.remove();
               document.head.insertAdjacentHTML('beforeend','<meta name="robots" content="noindex">');
               document.body.innerHTML =
                 '<style>' +
                   'body{font:16px system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.6;max-width:720px;margin:4rem auto;padding:0 1rem;text-align:center}' +
                   '.logo{width:140px;height:auto;margin:0 auto 20px;display:block}' +
                   '.powered{margin-top:16px;opacity:.75}' +
+                  '.link a{text-decoration:underline}' +
                 '</style>' +
                 '<img class="logo" src="/built4you.png" alt="Built4You logo">' +
                 '<h1>We’ll be back soon</h1>' +
                 '<p>' + (cfg.message || 'Site is temporarily offline for maintenance.') + '</p>' +
-                '<p class="powered">This website is powered by Built4You</p>';
+                '<p class="powered">This website is powered by Built4You</p>' +
+                '<p class="link"><a href="https://built4you.org" target="_blank" rel="noopener">built4you.org</a></p>';
             }
           }
         } catch (_) {}
       })();
     </script>
 
-    <!-- Vite entry; Vite replaces this src to /assets/*.js in dist -->
     <script type="module" id="app-entry" src="/src/main.tsx"></script>
   </body>
 </html>
