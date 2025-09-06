@@ -25,6 +25,7 @@ jobs:
       - run: npm ci
       - run: npx vite build
       - run: cp dist/index.html dist/404.html
+      - run: echo beachbumzmhc.com > dist/CNAME     # <-- required for custom domain
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
