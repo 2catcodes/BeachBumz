@@ -39,6 +39,7 @@
     }
     </script>
 
+    <!-- Optional SPA param fix -->
     <script>
       (function () {
         try {
@@ -52,18 +53,46 @@
   <body>
     <div id="root"></div>
 
+    <!-- Kill switch with /bypass and /unbypass -->
     <script>
       (function () {
+        function hasBypassCookie() {
+          return document.cookie.split(";").some(function (c) { return c.trim().indexOf("bb_bypass=1") === 0; });
+        }
+        function setBypassCookie(on) {
+          if (on) {
+            document.cookie = "bb_bypass=1; Max-Age=2592000; Path=/; SameSite=Lax";
+          } else {
+            document.cookie = "bb_bypass=; Max-Age=0; Path=/; SameSite=Lax";
+          }
+        }
+        // Handle /bypass and /unbypass before maintenance check
+        try {
+          var url = new URL(window.location.href);
+          if (url.pathname === "/bypass" || url.searchParams.has("bypass")) {
+            setBypassCookie(true);
+            url.pathname = "/";
+            url.searchParams.delete("bypass");
+            history.replaceState(null, "", url.toString());
+          } else if (url.pathname === "/unbypass") {
+            setBypassCookie(false);
+            url.pathname = "/";
+            history.replaceState(null, "", url.toString());
+          }
+        } catch (e) {}
+
+        // Maintenance gate
         try {
           var r = new XMLHttpRequest();
-          r.open('GET', '/maintenance.json?v=' + Date.now(), false);
+          r.open("GET", "/maintenance.json?v=" + Date.now(), false);
           r.send(null);
           if (r.status === 200) {
-            var cfg = JSON.parse(r.responseText || '{}');
-            if (cfg.enabled) {
-              var entry = document.getElementById('app-entry');
+            var cfg = JSON.parse(r.responseText || "{}");
+            var bypassActive = hasBypassCookie();
+            if (cfg.enabled && !bypassActive) {
+              var entry = document.getElementById("app-entry");
               if (entry) entry.remove();
-              document.head.insertAdjacentHTML('beforeend','<meta name="robots" content="noindex">');
+              document.head.insertAdjacentHTML("beforeend", '<meta name="robots" content="noindex">');
               document.body.innerHTML =
                 '<style>' +
                   'body{font:16px system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.6;max-width:720px;margin:4rem auto;padding:0 1rem;text-align:center}' +
@@ -82,6 +111,7 @@
       })();
     </script>
 
+    <!-- Vite entry -->
     <script type="module" id="app-entry" src="/src/main.tsx"></script>
   </body>
 </html>
