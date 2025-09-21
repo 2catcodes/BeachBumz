@@ -1,6 +1,6 @@
-// project/beachbumz/src/pages/Menu.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO"; // SEO only addition
 
 const DOORDASH_URL = "https://www.doordash.com/store/beach-bumz-morehead-city-31247691/44617761/?utm_source=mx_share/"; // replace with your actual DoorDash store link
 
@@ -66,7 +66,7 @@ const MENU: MenuData = {
     {
       name: "Baby Spinach Salad",
       description:
-        "Baby spinach, onions, fresh mushrooms, crumbled bacon, croutons & a slice of hard‑boiled egg",
+        "Baby spinach, onions, fresh mushrooms, crumbled bacon, croutons & a slice of hard-boiled egg",
       price: "$12.95",
     },
     {
@@ -478,8 +478,50 @@ function PriceBlock({ item }: { item: Item }) {
 const slug = (s: string) =>
   s.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
 
+/* ---------- SEO: JSON-LD Menu injection (adds script tag only) ---------- */
+function normalizePrice(val: string | undefined): string | undefined {
+  if (!val) return undefined;
+  return val.replace(/\$/g, "").trim();
+}
+function buildMenuJSONLD() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Menu",
+    "hasMenuSection": categories.map((cat) => ({
+      "@type": "MenuSection",
+      "name": cat,
+      "hasMenuItem": (MENU[cat] || []).map((it) => {
+        const base: any = {
+          "@type": "MenuItem",
+          "name": it.name,
+          "description": it.description || undefined,
+          "url": `https://beachbumzmhc.com/menu/#${slug(cat)}`
+        };
+        if (it.prices && Object.keys(it.prices).length) {
+          base.offers = Object.entries(it.prices).map(([k, v]) => ({
+            "@type": "Offer",
+            "name": k,
+            "price": normalizePrice(v),
+            "priceCurrency": "USD"
+          }));
+        } else if (it.price) {
+          base.offers = {
+            "@type": "Offer",
+            "price": normalizePrice(it.price),
+            "priceCurrency": "USD"
+          };
+        }
+        return base;
+      })
+    }))
+  };
+}
+
 export default function Menu() {
   const [active, setActive] = useState<string>(categories[0] || "");
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
   const sentinelsRef = useRef<Record<string, HTMLDivElement | null>>({});
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
@@ -507,132 +549,216 @@ export default function Menu() {
     return () => observer.disconnect();
   }, []);
 
+  // Inject JSON-LD once
+  useEffect(() => {
+    const tag = document.createElement("script");
+    tag.type = "application/ld+json";
+    tag.setAttribute("data-menujson", "1");
+    tag.textContent = JSON.stringify(buildMenuJSONLD());
+    document.head.appendChild(tag);
+    return () => {
+      if (tag && tag.parentNode) tag.parentNode.removeChild(tag);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Horizontal nav scroll state
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const update = () => {
+      const max = el.scrollWidth - el.clientWidth - 1;
+      setCanLeft(el.scrollLeft > 0);
+      setCanRight(el.scrollLeft < max);
+    };
+    update();
+    const onResize = () => update();
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", onResize);
+    // microtask to ensure layout
+    const t = setTimeout(update, 0);
+    return () => {
+      clearTimeout(t);
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
   const handleJump = (cat: string) => {
     const id = slug(cat);
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const scrollByDir = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const amount = Math.round(el.clientWidth * 0.8);
+    el.scrollBy({ left: dir * amount, behavior: "smooth" });
+  };
+
   return (
-    <section className="pt-4 sm:pt-12 bg-slate-900 text-white min-h-screen">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
-        {/* Header row */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Menu</h1>
-          <div className="flex items-center gap-3">
-            {DOORDASH_URL && (
-              <a
-                href={DOORDASH_URL}
-                target="https://www.doordash.com/store/beach-bumz-morehead-city-31247691/44617761/?utm_source=mx_share"
-                rel="noopener noreferrer"
-                className="inline-flex rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-sm hover:bg-emerald-400/20"
+    <>
+      {/* SEO head tags for this route only */}
+      <SEO
+        title="Menu | Beach Bumz Pub & Pizzeria, Morehead City NC"
+        description="Pizza, subs, wings, salads, pasta, seafood, calzones, desserts, and kids menu. View our full menu and prices."
+        path="/menu"
+        breadcrumbs={[
+          { name: "Home", item: "https://beachbumzmhc.com/" },
+          { name: "Menu", item: "https://beachbumzmhc.com/menu/" }
+        ]}
+        image="https://beachbumzmhc.com/og-image.jpg"
+      />
+
+      <section className="pt-4 sm:pt-12 bg-slate-900 text-white min-h-screen">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
+          {/* Header row */}
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Menu</h1>
+            <div className="flex items-center gap-3">
+              {DOORDASH_URL && (
+                <a
+                  href={DOORDASH_URL}
+                  target="https://www.doordash.com/store/beach-bumz-morehead-city-31247691/44617761/?utm_source=mx_share"
+                  rel="noopener noreferrer"
+                  className="inline-flex rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-sm hover:bg-emerald-400/20"
+                >
+                  Order on DoorDash
+                </a>
+              )}
+              <Link to="/" className="text-turquoise hover:opacity-90 underline underline-offset-4">
+                ← Back to Home
+              </Link>
+              <button
+                onClick={() => window.print()}
+                className="hidden sm:inline-flex rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10"
               >
-                Order on DoorDash
-              </a>
-            )}
-            <Link to="/" className="text-turquoise hover:opacity-90 underline underline-offset-4">
-              ← Back to Home
-            </Link>
-            <button
-              onClick={() => window.print()}
-              className="hidden sm:inline-flex rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10"
-            >
-              Print
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile quick picker */}
-        <div className="md:hidden mb-3">
-          <label htmlFor="catSelect" className="sr-only">Select category</label>
-          <select
-            id="catSelect"
-            value={active}
-            onChange={(e) => {
-              setActive(e.target.value);
-              handleJump(e.target.value);
-            }}
-            className="w-full rounded-lg border border-white/15 bg-white/10 text-white px-3 py-2"
-          >
-            {categories.map((c) => (
-              <option key={c} value={c} className="bg-slate-900 text-white">
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Sticky category chips (desktop) */}
-        <div className="sticky top-20 z-40 mb-8 bg-slate-900/85 backdrop-blur border-b border-white/10 hidden md:block">
-          <div className="relative">
-            <span className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-slate-900/85 to-transparent" />
-            <span className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-slate-900/85 to-transparent" />
-            <nav aria-label="Menu categories" className="w-full overflow-x-auto no-scrollbar" ref={scrollerRef}>
-              <ul className="flex gap-3 whitespace-nowrap px-1 py-2 pr-6">
-                {categories.map((cat) => {
-                  const isActive = active === cat;
-                  return (
-                    <li key={cat} className="shrink-0">
-                      <button
-                        onClick={() => handleJump(cat)}
-                        className={`px-4 py-2 rounded-full text-sm transition
-                        ${isActive ? "bg-turquoise text-slate-900 font-semibold" : "bg-white/6 hover:bg-white/12 text-white"} 
-                        border border-white/10`}
-                        aria-current={isActive ? "true" : undefined}
-                      >
-                        {cat}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          </div>
-        </div>
-
-        {/* Sections */}
-        {categories.map((section) => (
-          <div key={section} className="mb-12">
-            <div ref={(el) => (sentinelsRef.current[section] = el)} data-section={section} aria-hidden className="h-px" />
-            <h2 id={slug(section)} className="scroll-mt-[88px] md:scroll-mt-[110px] text-2xl font-bold mb-3">
-              {section}
-            </h2>
-
-            {/* Section notes */}
-            {SECTION_NOTES[section] ? (
-              <div className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                {SECTION_NOTES[section]}
-              </div>
-            ) : null}
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {(MENU[section] || []).map((item) => (
-                <article key={item.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                    <h3 className="text-lg font-semibold break-words">{item.name}</h3>
-                    <PriceBlock item={item} />
-                  </div>
-                  {item.description && item.description.trim().length > 0 && (
-                    <p className="mt-2 text-sm opacity-90">{item.description}</p>
-                  )}
-                </article>
-              ))}
+                Print
+              </button>
             </div>
           </div>
-        ))}
 
-        <div className="mt-12 flex items-center justify-between text-xs opacity-70 print:hidden">
-          <span>Allergies or dietary needs? Please inform our staff before ordering.</span>
-          <span>Prices subject to change. Please confirm in-store.</span>
+          {/* Mobile quick picker */}
+          <div className="md:hidden mb-3">
+            <label htmlFor="catSelect" className="sr-only">Select category</label>
+            <select
+              id="catSelect"
+              value={active}
+              onChange={(e) => {
+                setActive(e.target.value);
+                handleJump(e.target.value);
+              }}
+              className="w-full rounded-lg border border-white/15 bg-white/10 text-white px-3 py-2"
+            >
+              {categories.map((c) => (
+                <option key={c} value={c} className="bg-slate-900 text-white">
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sticky category chips (desktop) with arrows */}
+          <div className="sticky top-20 z-40 mb-8 hidden md:block">
+            <div className="relative bg-slate-900/85 backdrop-blur border-b border-white/10 rounded-none">
+              {/* edge fades */}
+              <span className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-slate-900/85 to-transparent" />
+              <span className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-slate-900/85 to-transparent" />
+              {/* scroller */}
+              <nav
+                aria-label="Menu categories"
+                className="w-full overflow-x-auto no-scrollbar pr-14" // pad for right arrow
+                ref={scrollerRef}
+              >
+                <ul id="menu-cat-list" className="flex gap-3 whitespace-nowrap px-1 py-2">
+                  {categories.map((cat) => {
+                    const isActive = active === cat;
+                    return (
+                      <li key={cat} className="shrink-0">
+                        <button
+                          onClick={() => handleJump(cat)}
+                          className={`px-4 py-2 rounded-full text-sm transition
+                          ${isActive ? "bg-turquoise text-slate-900 font-semibold" : "bg-white/6 hover:bg-white/12 text-white"} 
+                          border border-white/10`}
+                          aria-current={isActive ? "true" : undefined}
+                        >
+                          {cat}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+
+              {/* left/right buttons */}
+              <button
+                type="button"
+                aria-label="Scroll categories left"
+                onClick={() => scrollByDir(-1)}
+                className={`absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full grid place-items-center border border-white/15 bg-white/10 hover:bg-white/20 transition ${
+                  canLeft ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Scroll categories right"
+                onClick={() => scrollByDir(1)}
+                className={`absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full grid place-items-center border border-white/15 bg-white/10 hover:bg-white/20 transition ${
+                  canRight ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                ›
+              </button>
+            </div>
+          </div>
+
+          {/* Sections */}
+          {categories.map((section) => (
+            <div key={section} className="mb-12">
+              <div ref={(el) => (sentinelsRef.current[section] = el)} data-section={section} aria-hidden className="h-px" />
+              <h2 id={slug(section)} className="scroll-mt-[88px] md:scroll-mt-[110px] text-2xl font-bold mb-3">
+                {section}
+              </h2>
+
+              {/* Section notes */}
+              {SECTION_NOTES[section] ? (
+                <div className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+                  {SECTION_NOTES[section]}
+                </div>
+              ) : null}
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {(MENU[section] || []).map((item) => (
+                  <article key={item.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <h3 className="text-lg font-semibold break-words">{item.name}</h3>
+                      <PriceBlock item={item} />
+                    </div>
+                    {item.description && item.description.trim().length > 0 && (
+                      <p className="mt-2 text-sm opacity-90">{item.description}</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div className="mt-12 flex items-center justify-between text-xs opacity-70 print:hidden">
+            <span>Allergies or dietary needs? Please inform our staff before ordering.</span>
+            <span>Prices subject to change. Please confirm in-store.</span>
+          </div>
         </div>
-      </div>
 
-      <style>{`
+        <style>{`
         .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
         .no-scrollbar::-webkit-scrollbar{ display:none }
         html { scroll-behavior: smooth; }
         @media print { .sticky { position: static; } }
       `}</style>
-    </section>
+      </section>
+    </>
   );
 }

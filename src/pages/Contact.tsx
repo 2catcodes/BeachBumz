@@ -1,5 +1,58 @@
+// project/beachbumz/src/pages/Contact.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import { MapPin, Phone, Clock, Instagram, Facebook } from "lucide-react";
+import SEO from "../components/SEO"; // SEO only
+
+const SITE = "https://beachbumzmhc.com";
+const CONTACT_URL = `${SITE}/contact/`;
+
+const BREADCRUMBS_JSON = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": `${CONTACT_URL}#breadcrumbs`,
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+    { "@type": "ListItem", position: 2, name: "Contact", item: CONTACT_URL },
+  ],
+};
+
+const CONTACTPAGE_JSON = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "@id": `${CONTACT_URL}#contactpage`,
+  url: CONTACT_URL,
+  about: { "@id": `${SITE}/#restaurant` },
+  mainEntity: {
+    "@type": "Organization",
+    "@id": `${SITE}/#org`,
+    name: "Beach Bumz Pub & Pizzeria",
+    url: `${SITE}/`,
+    telephone: "+1-252-726-7800",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "105 South 6th Street",
+      addressLocality: "Morehead City",
+      addressRegion: "NC",
+      postalCode: "28557",
+      addressCountry: "US",
+    },
+    sameAs: [
+      "https://www.instagram.com/beachbumzmc",
+      "https://www.facebook.com/p/Beach-Bumz-Pub-Pizzaria-100063510343151/",
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+1-252-726-7800",
+        contactType: "customer service",
+        areaServed: "US",
+        availableLanguage: ["English"],
+      },
+    ],
+  },
+  hasMap:
+    "https://www.google.com/maps/place/105+S+6th+St,+Morehead+City,+NC+28557",
+};
 
 const Contact = () => {
   useEffect(() => {
@@ -31,190 +84,215 @@ const Contact = () => {
   }, [isDesktop]);
 
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-ocean-blue to-slate-900 py-16 md:py-20">
-        <div className="water-ripple"></div>
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h1 className="font-display text-5xl md:text-6xl text-white mb-4 neon-glow">
-            Get in Touch
-          </h1>
-          <p className="text-lg text-sandy-beige mb-6 animate-on-scroll">
-            We'd love to hear from you! Come visit us in beautiful Morehead City
-          </p>
+    <>
+      {/* Per-route SEO */}
+      <SEO
+        title="Contact | Beach Bumz Pub & Pizzeria"
+        description="Find us at 105 S 6th St, Morehead City, NC 28557. Call (252) 726-7800. Open daily."
+        path="/contact"
+        image={`${SITE}/og-image.jpg`}
+        breadcrumbs={[
+          { name: "Home", item: `${SITE}/` },
+          { name: "Contact", item: CONTACT_URL },
+        ]}
+      />
+      {/* Structured data (no UI change) */}
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMBS_JSON) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(CONTACTPAGE_JSON) }}
+      />
 
-          {/* Primary phone CTA — bold, glowing, tappable */}
-          <a
-            href="tel:252-726-7800"
-            className="inline-flex items-center justify-center gap-3 px-7 py-4 rounded-full
+      <div className="min-h-screen">
+        {/* Hero */}
+        <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-ocean-blue to-slate-900 py-16 md:py-20">
+          <div className="water-ripple"></div>
+          <div className="max-w-4xl mx-auto text-center px-4">
+            <h1 className="font-display text-5xl md:text-6xl text-white mb-4 neon-glow">
+              Get in Touch
+            </h1>
+            <p className="text-lg text-sandy-beige mb-6 animate-on-scroll">
+              We'd love to hear from you! Come visit us in beautiful Morehead City
+            </p>
+
+            {/* Primary phone CTA — bold, glowing, tappable */}
+            <a
+              href="tel:252-726-7800"
+              className="inline-flex items-center justify-center gap-3 px-7 py-4 rounded-full
                        bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 text-ocean-blue
                        font-extrabold text-xl md:text-2xl shadow-[0_10px_30px_rgba(255,200,0,0.4)]
                        ring-2 ring-white/60 hover:ring-white
                        hover:shadow-[0_12px_36px_rgba(255,210,0,0.55)]
                        transition-all duration-300 hover:-translate-y-0.5 focus:outline-none
                        focus-visible:ring-4 focus-visible:ring-amber-300/70 pulse-glow"
-            aria-label="Call Beach Bumz now"
-          >
-            <Phone className="h-6 w-6 md:h-7 md:w-7" />
-            <span>Call Now: (252) 726-7800</span>
-          </a>
+              aria-label="Call Beach Bumz now"
+            >
+              <Phone className="h-6 w-6 md:h-7 md:w-7" />
+              <span>Call Now: (252) 726-7800</span>
+            </a>
 
-          {/* Subtext */}
-          <div className="mt-3 text-sandy-beige/90 text-sm">
-            Tap to call and place an order or ask about today’s specials
+            {/* Subtext */}
+            <div className="mt-3 text-sandy-beige/90 text-sm">
+              Tap to call and place an order or ask about today’s specials
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Contact Info only (no form) */}
-      <section className="py-20 bg-sandy-beige sand-texture">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-display text-4xl text-ocean-blue mb-8 text-center">
-            Visit Beach Bumz
-          </h2>
+        {/* Contact Info only (no form) */}
+        <section className="py-20 bg-sandy-beige sand-texture">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="font-display text-4xl text-ocean-blue mb-8 text-center">
+              Visit Beach Bumz
+            </h2>
 
-          {/* Phone highlight card */}
-          <div className="mb-8 rounded-2xl p-6 md:p-7 bg-white shadow-xl border border-yellow-300/40 relative overflow-hidden">
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-yellow-200/40 blur-2xl" />
-            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-amber-200/40 blur-2xl" />
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-amber-300 text-ocean-blue shadow-md">
+            {/* Phone highlight card */}
+            <div className="mb-8 rounded-2xl p-6 md:p-7 bg-white shadow-xl border border-yellow-300/40 relative overflow-hidden">
+              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-yellow-200/40 blur-2xl" />
+              <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-amber-200/40 blur-2xl" />
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-amber-300 text-ocean-blue shadow-md">
+                    <Phone className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <div className="text-sm text-gray-600">Call us</div>
+                    <div className="text-2xl font-extrabold tracking-tight text-ocean-blue">
+                      (252) 726-7800
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="tel:252-726-7800"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                           bg-ocean-blue text-white font-semibold shadow-lg hover:shadow-xl
+                           hover:bg-ocean-blue/90 transition-colors"
+                >
+                  Tap to Call
                   <Phone className="h-5 w-5" />
-                </span>
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
+                <MapPin className="h-6 w-6 text-turquoise mt-1 flex-shrink-0 bounce-subtle" />
                 <div>
-                  <div className="text-sm text-gray-600">Call us</div>
-                  <div className="text-2xl font-extrabold tracking-tight text-ocean-blue">
-                    (252) 726-7800
+                  <h3 className="font-semibold text-ocean-blue mb-2">Address</h3>
+                  <p className="text-gray-700">105 South 6th Street</p>
+                  <p className="text-gray-700">Morehead City, NC 28577</p>
+                  <a
+                    href="https://www.google.com/maps/place/105+S+6th+St,+Morehead+City,+NC+28557"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-turquoise underline"
+                  >
+                    Open in Google Maps
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
+                <Clock className="h-6 w-6 text-turquoise mt-1 flex-shrink-0 starfish-spin" />
+                <div>
+                  <h3 className="font-semibold text-ocean-blue mb-2">Hours</h3>
+                  <div className="space-y-1 text-gray-700">
+                    <p>
+                      <span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM
+                    </p>
+                    <p>
+                      <span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM
+                    </p>
+                    <p>
+                      <span className="font-medium">Sunday:</span> 11:00 AM - 9:00 PM
+                    </p>
                   </div>
                 </div>
               </div>
-              <a
-                href="tel:252-726-7800"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
-                           bg-ocean-blue text-white font-semibold shadow-lg hover:shadow-xl
-                           hover:bg-ocean-blue/90 transition-colors"
-              >
-                Tap to Call
-                <Phone className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
 
-          <div className="space-y-6">
-            <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
-              <MapPin className="h-6 w-6 text-turquoise mt-1 flex-shrink-0 bounce-subtle" />
-              <div>
-                <h3 className="font-semibold text-ocean-blue mb-2">Address</h3>
-                <p className="text-gray-700">105 South 6th Street</p>
-                <p className="text-gray-700">Morehead City, NC 28577</p>
-                <a
-                  href="https://www.google.com/maps/place/105+S+6th+St,+Morehead+City,+NC+28557"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-turquoise underline"
-                >
-                  Open in Google Maps
-                </a>
+              <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
+                <Instagram className="h-6 w-6 text-coral-pink mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-ocean-blue mb-2">Instagram</h3>
+                  <a
+                    href="https://www.instagram.com/beachbumzmc"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-gray-700 hover:text-coral-pink transition-colors duration-300"
+                  >
+                    @beachbumzmc
+                  </a>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
-              <Clock className="h-6 w-6 text-turquoise mt-1 flex-shrink-0 starfish-spin" />
-              <div>
-                <h3 className="font-semibold text-ocean-blue mb-2">Hours</h3>
-                <div className="space-y-1 text-gray-700">
-                  <p>
-                    <span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM
-                  </p>
-                  <p>
-                    <span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM
-                  </p>
-                  <p>
-                    <span className="font-medium">Sunday:</span> 11:00 AM - 9:00 PM
-                  </p>
+              <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
+                <Facebook className="h-6 w-6 text-coral-pink mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-ocean-blue mb-2">Facebook</h3>
+                  <a
+                    href="https://www.facebook.com/p/Beach-Bumz-Pub-Pizzaria-100063510343151/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-gray-700 hover:text-coral-pink transition-colors duration-300"
+                  >
+                    Facebook
+                  </a>
                 </div>
               </div>
             </div>
-
-            <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
-              <Instagram className="h-6 w-6 text-coral-pink mt-1 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-ocean-blue mb-2">Instagram</h3>
-                <a
-                  href="https://www.instagram.com/beachbumzmc"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gray-700 hover:text-coral-pink transition-colors duration-300"
-                >
-                  @beachbumz
-                </a>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4 bg-white/80 rounded-lg p-6 shadow-lg hover-lift beach-card tilt-on-hover">
-              <Facebook className="h-6 w-6 text-coral-pink mt-1 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-ocean-blue mb-2">Facebook</h3>
-                <a
-                  href="https://www.facebook.com/p/Beach-Bumz-Pub-Pizzaria-100063510343151/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gray-700 hover:text-coral-pink transition-colors duration-300"
-                >
-                  Facebook
-                </a>
-              </div>
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Map */}
-      <section id="map" className="relative scroll-mt-24 md:scroll-mt-28">
-        <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
-          <iframe
-            src={mapSrc}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Beach Bumz Pub & Pizzeria Location"
-            className="filter hue-rotate-15 saturate-150"
-          ></iframe>
-          <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm rounded-lg p-4 shadow-xl beach-card pulse-glow">
-            <h4 className="font-semibold text-ocean-blue mb-2 flex items-center">
-              <MapPin className="h-5 w-5 text-turquoise mr-2 bounce-subtle" />
-              Beach Bumz Pub & Pizzeria
-            </h4>
-            <p className="text-gray-700 text-sm">105 South 6th Street</p>
-            <p className="text-gray-700 text-sm">Morehead City, NC 28577</p>
+        {/* Map */}
+        <section id="map" className="relative scroll-mt-24 md:scroll-mt-28">
+          <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+            <iframe
+              src={mapSrc}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Beach Bumz Pub & Pizzeria Location"
+              className="filter hue-rotate-15 saturate-150"
+            ></iframe>
+            <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm rounded-lg p-4 shadow-xl beach-card pulse-glow">
+              <h4 className="font-semibold text-ocean-blue mb-2 flex items-center">
+                <MapPin className="h-5 w-5 text-turquoise mr-2 bounce-subtle" />
+                Beach Bumz Pub & Pizzeria
+              </h4>
+              <p className="text-gray-700 text-sm">105 South 6th Street</p>
+              <p className="text-gray-700 text-sm">Morehead City, NC 28577</p>
+            </div>
+            <a
+              href="https://www.google.com/maps/place/Beach+Bumz+Pub+%26+Pizzaria/@34.720578,-76.7094583,17z"
+              target="_blank"
+              rel="noreferrer"
+              className="absolute top-6 right-6 bg-white/95 text-ocean-blue rounded-md px-3 py-2 shadow-md hover:bg-white transition"
+            >
+              Open in Google Maps
+            </a>
           </div>
-          <a
-            href="https://www.google.com/maps/place/Beach+Bumz+Pub+%26+Pizzaria/@34.720578,-76.7094583,17z"
-            target="_blank"
-            rel="noreferrer"
-            className="absolute top-6 right-6 bg-white/95 text-ocean-blue rounded-md px-3 py-2 shadow-md hover:bg-white transition"
-          >
-            Open in Google Maps
-          </a>
-        </div>
-      </section>
+        </section>
 
-      {/* Floating mobile call button */}
-      <a
-        href="tel:252-726-7800"
-        className="fixed bottom-5 right-4 z-40 flex items-center gap-2 px-5 py-3 rounded-full
+        {/* Floating mobile call button */}
+        <a
+          href="tel:252-726-7800"
+          className="fixed bottom-5 right-4 z-40 flex items-center gap-2 px-5 py-3 rounded-full
                    bg-amber-400 text-ocean-blue font-bold shadow-xl ring-2 ring-white/70
                    md:hidden hover:bg-amber-300 transition-colors pulse-glow"
-        aria-label="Call Beach Bumz"
-      >
-        <Phone className="h-5 w-5" />
-        Call Now
-      </a>
-    </div>
+          aria-label="Call Beach Bumz"
+        >
+          <Phone className="h-5 w-5" />
+          Call Now
+        </a>
+      </div>
+    </>
   );
 };
 
