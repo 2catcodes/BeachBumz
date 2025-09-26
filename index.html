@@ -9,7 +9,9 @@
     <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/favicon.png" />
 
-    <title>Beach Bumz Pub & Pizzeria - Morehead City, NC | Pizza, Subs, Wings</title>
+    <!-- Short, keyword-rich title (< 60 chars) -->
+    <title>Beach Bumz Pub & Pizzeria · Morehead City NC</title>
+
     <meta name="description" content="Coastal pub in Morehead City, NC serving pizza, subs, wings, pasta, and craft drinks. Family friendly. Dine in or order online." />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
     <link rel="canonical" href="https://beachbumzmhc.com/" />
@@ -17,7 +19,7 @@
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="Beach Bumz Pub & Pizzeria" />
-    <meta property="og:title" content="Beach Bumz Pub & Pizzeria - Where Comfort Meets the Coast" />
+    <meta property="og:title" content="Beach Bumz Pub & Pizzeria · Morehead City NC" />
     <meta property="og:description" content="Pizza, subs, wings, pasta and coastal drinks in Morehead City, NC." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://beachbumzmhc.com/" />
@@ -25,7 +27,7 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Beach Bumz Pub & Pizzeria - Morehead City, NC" />
+    <meta name="twitter:title" content="Beach Bumz Pub & Pizzeria · Morehead City NC" />
     <meta name="twitter:description" content="Pizza, subs, wings, pasta and coastal drinks in Morehead City, NC." />
     <meta name="twitter:image" content="https://beachbumzmhc.com/og-image.jpg" />
 
@@ -107,6 +109,21 @@
 }
     </script>
 
+    <!-- Visually hidden utility (for accessible H1 below) -->
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+
     <!-- SPA canonical updater -->
     <script>
       (function () {
@@ -139,6 +156,9 @@
     </script>
   </head>
   <body>
+    <!-- Accessible H1 for crawlers and screen readers (won’t affect layout) -->
+    <h1 class="sr-only">Beach Bumz Pub & Pizzeria in Morehead City, North Carolina</h1>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
